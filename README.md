@@ -30,3 +30,23 @@ w = 5.0
 result = search(V, vFav, pivots, limit, misses, w)
 display_results(result)
 ```
+
+One may also use the built-in matroids in `SAGE`, as in:
+
+```python
+U24 = matroids.Uniform(2,4)
+P = U24.matroid_polytope()
+V = P.vertices_list()
+```
+This is equivalent to directly typing
+```python
+V = [[0, 0, 1, 1], [0, 1, 0, 1], [0, 1, 1, 0],
+          [1, 0, 0, 1], [1, 0, 1, 0], [1, 1, 0, 0]]
+```
+
+Finally, we note that as you update your search parameters, you should try to keep the number of pivots to 2, at least initially, as having 3 or more pivots will quickly cause longer computations. As you adjust the other parameters, or adjust where the pivots are, you will want to use the function `update_search` which takes the same arguments as `search` except the first positional argument should be the `result` of a previous computation. This way you do not throw away the posets obtained from previous searches, and the code will automatically compare each of the new posets to your old posets and each other, giving you an updated list of non-isomorphic posets obtained by the broken line shellings you have explored so far. An example of `update_search` is as follows, where we are assuming you have used `search(args...)` to obtain a `result`, which you use as input to `update_search` as in
+
+```python
+result = update_search(result, V, vFav, pivots, limit, misses, w)
+display_results(result)
+```
