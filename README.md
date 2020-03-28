@@ -50,3 +50,5 @@ Finally, we note that as you update your search parameters, you should try to ke
 result = update_search(result, V, vFav, pivots, limit, misses, w)
 display_results(result)
 ```
+
+We also include the file `broken-line-shelling-examples-complete-graphic-matroids.sagews`. If you look at this file here, it will do no good, as it is unreadable. But if you download it and load it in Cocalc, it gives you some examples of how to use `shellings.sage`.
