@@ -10,7 +10,7 @@ def search(V, vFav, pivots, limit, misses, w):
     #     "misses" is the number of consecutive failed attempts to get a new, valid \ell(v_{j+1}) before you give up
     #     "w" is the relative weight of \ell(v_j) compared to the convex combination of all v_i - v_1
     #         -higher value of "w" means a more localized search
-    #         -a value of "w=0" means you search the entire cone(vFav) by convex combinations
+    #         -a value of "w=0" means you destroy the dependency of \ell(v_{j+1}) on the previous \ell(v_j)
     import random
     if len(pivots) > 0:
         if pivots[0]==0:
@@ -56,26 +56,6 @@ def update_search(result, V, vFav, pivots, limit, misses, w):
     print "Of these {} sweeps, only {} gave rise to non-isomorphic posets".format( len(sweeps), len(distinct_posets) ); print;
     return [distinct_sweeps, distinct_posets, distinct_tables]
 
-def update_distinct_sweeps(old_result, new_result, VT, Ls):
-    new_sweeps = old_result[0]
-    new_posets = old_result[1]
-    new_tables = old_result[2]
-    sweeps = new_result[0] # new sweeps to check against old sweeps
-    for i,sweep in enumerate(sweeps):
-        #new_table, new_poset = get_table_and_poset_from_walk(walk, VT, Ls)
-        new_table = new_result[2][i]
-        new_poset = new_result[1][i]
-        new = True
-        for old_poset in new_posets:
-            if old_poset.is_isomorphic(new_poset):
-                new = False
-        if new:
-            # add them at the same time, so ith entry of "new_walks" corresponds to ith entry of "new_posets"
-            new_posets.append(new_poset)
-            new_sweeps.append(sweep)
-            new_tables.append(new_table)
-    return new_sweeps, new_posets, new_tables
-
 def display_results(result, items=[]):
     # "result" should be a list [distinct_sweeps, distinct_posets, distinct_tables], output from search_new(...)
     # "items" should be a list of which posets you want to print.
@@ -97,12 +77,31 @@ def display_results(result, items=[]):
         print result[2][i]; print; print;
     return
 
+def update_distinct_sweeps(old_result, new_result, VT, Ls):
+    new_sweeps = old_result[0]
+    new_posets = old_result[1]
+    new_tables = old_result[2]
+    sweeps = new_result[0] # new sweeps to check against old sweeps
+    for i,sweep in enumerate(sweeps):
+        #new_table, new_poset = get_table_and_poset_from_walk(walk, VT, Ls)
+        new_table = new_result[2][i]
+        new_poset = new_result[1][i]
+        new = True
+        for old_poset in new_posets:
+            if old_poset.is_isomorphic(new_poset):
+                new = False
+        if new:
+            # add them at the same time, so ith entry of "new_walks" corresponds to ith entry of "new_posets"
+            new_posets.append(new_poset)
+            new_sweeps.append(sweep)
+            new_tables.append(new_table)
+    return new_sweeps, new_posets, new_tables
+
 def get_valid_Ls_new(limit, misses, w, vFav, VT, normals, Lold, Ls, step):
     neighbors_signs = []
     since_found = 0
     keep_going = True
     total_count = 0
-    absolute_limit = 1000
     while keep_going:
         since_found += 1
         total_count += 1
@@ -112,10 +111,9 @@ def get_valid_Ls_new(limit, misses, w, vFav, VT, normals, Lold, Ls, step):
             keep_going = True
         if len(neighbors_signs) > limit:
             keep_going = False
-        if total_count > absolute_limit:
-            print "At pivot {} we found 0 valid, new linear functionals after 1000 tries. We recommend changing your search parameters".format(step)
+        if total_count > misses:
             keep_going = False
-        l = get_convex_comb_minimizing_new(w, Ls[Lold], vFav, VT)
+        l = get_convex_comb_minimizing_check(w, Ls[Lold], vFav, VT)
         signsl = get_sign_pattern(l,normals)
         if signsl != Lold: # not the original region
             if signsl not in neighbors_signs: # not a region we already found
@@ -125,20 +123,25 @@ def get_valid_Ls_new(limit, misses, w, vFav, VT, normals, Lold, Ls, step):
                     neighbors_signs.append(signsl)
     return neighbors_signs, Ls
 
-def get_convex_comb_minimizing_new(w, v_old, vFav, VT):
+def get_convex_comb_minimizing_check(w, v_old, vFav, VT):
     # "w" is how much MORE of \ell(v_j) should be there versus \ell(v_{j+1})
     # "v_old" is Ls[Lold] a linear functional vector used previously
     import random
     n = len(VT)
-    cs = get_convex_coeffs(n-1)
-    vecs = [vector(v) - vector(vFav) for v in VT if v!=vFav]
-    L = sum([cs[i]*vecs[i] for i in range(n-1)])
-    # now we normalize and add in "v_old"
-    v_old = v_old / norm(v_old) # unit vector
-    L = L / norm(L) # unit vector
-    scaling = random.random() # between 0 and 1
-    Lnew = w*scaling*v_old + L
-    return Lnew
+    found = False # make sure our new linear functional minimizes "vFav"
+    while not found:
+        cs = get_convex_coeffs(n-1)
+        vecs = [vector(v) - vector(vFav) for v in VT if v!=vFav]
+        L = sum([cs[i]*vecs[i] for i in range(n-1)])
+        # now we normalize and add in "v_old"
+        v_old = v_old / norm(v_old) # unit vector
+        L = L / norm(L) # unit vector
+        Lnew = w*v_old + L
+        indices = vertex_index_order(VT,Lnew)
+        indFav = VT.index(vFav)
+        if indices[0] == indFav:
+            found = True
+            return Lnew
 
 def get_convex_coeffs(N):
     import random
