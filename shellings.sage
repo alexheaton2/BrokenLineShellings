@@ -175,7 +175,6 @@ def get_sweeps_new(vFav,L0,Ls,pivots,VT,normals,limit,misses,w):
     #                         These are keys to the GLOBAL dictionary "Ls" whose keys are "signs" and values are linear functionals "L"
     signsL0 = get_sign_pattern(L0,normals)
     Ls[signsL0] = L0
-    limit = N
     sweepsBuild = [ [] for i in range(len(VT)+1) ] # sweepsBuild[-1] will be our final answer "sweeps"
     sweepsBuild[1] = [[signsL0]] #sweepsBuild[0] = [signsL0]
     for i in range(1, len(VT)):
