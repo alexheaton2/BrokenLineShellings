@@ -14,7 +14,7 @@ def search(V, vFav, pivots, limit, misses, w):
     import random
     if len(pivots) > 0:
         if pivots[0]==0:
-            print "Please don't pivot at 0. The first place you can pivot is at 1."
+            print("Please don't pivot at 0. The first place you can pivot is at 1.")
             return 0
     VT = [tuple(v) for v in V]
     vFav = tuple(vFav)
@@ -24,19 +24,19 @@ def search(V, vFav, pivots, limit, misses, w):
     Ls = {} # better name for the linear fncls dictionary, whose keys are "sign patterns" and values are "linear fncls"
     t2 = time.time()
     sweeps, Ls = get_sweeps_new(vFav,L0,Ls,pivots,VT,normals,limit,misses,w)
-    t3 = time.time(); print "time to find all the distinct, valid sweeps:   {}".format(t3-t2)
-    print "we have {} sweeps total.".format(len(sweeps)); print;
+    t3 = time.time(); print("time to find all the distinct, valid sweeps:   {}".format(t3-t2))
+    print("we have {} sweeps total.".format(len(sweeps))); print();
     import time; t1 = time.time();
     distinct_sweeps, distinct_posets, distinct_tables = get_distinct_sweeps(sweeps, VT, Ls)
-    t2 = time.time(); print "time needed to sort only the distinct posets from all sweeps:   {}".format(t2-t1);
-    print "Of these {} sweeps, only {} gave rise to non-isomorphic posets".format( len(sweeps), len(distinct_posets) ); print;
+    t2 = time.time(); print("time needed to sort only the distinct posets from all sweeps:   {}".format(t2-t1));
+    print("Of these {} sweeps, only {} gave rise to non-isomorphic posets".format( len(sweeps), len(distinct_posets) )); print();
     return [distinct_sweeps, distinct_posets, distinct_tables]
 
 def update_search(result, V, vFav, pivots, limit, misses, w):
     # "result" should be a list [distinct_sweeps, distinct_posets, distinct_tables]
     import random
     if pivots[0]==0:
-        print "Please don't pivot at 0. The first place you can pivot is at 1."
+        print("Please don't pivot at 0. The first place you can pivot is at 1.")
         return 0
     VT = [tuple(v) for v in V]
     vFav = tuple(vFav)
@@ -47,34 +47,34 @@ def update_search(result, V, vFav, pivots, limit, misses, w):
     Ls = {}
     t2 = time.time()
     sweeps, Ls = get_sweeps_new(vFav,L0,Ls,pivots,VT,normals,limit,misses,w)
-    t3 = time.time(); print "time to find all the distinct, valid sweeps:   {}".format(t3-t2)
-    print "we have {} sweeps total.".format(len(sweeps)); print;
+    t3 = time.time(); ("time to find all the distinct, valid sweeps:   {}".format(t3-t2))
+    ("we have {} sweeps total.".format(len(sweeps))); ();
     import time; t1 = time.time();
     distinct_sweeps, distinct_posets, distinct_tables = get_distinct_sweeps(sweeps, VT, Ls)
     distinct_sweeps, distinct_posets, distinct_tables = update_distinct_sweeps(result, [distinct_sweeps, distinct_posets, distinct_tables], VT, Ls)
-    t2 = time.time(); print "time needed to sort only the distinct posets from all sweeps:   {}".format(t2-t1);
-    print "Of these {} sweeps, only {} gave rise to non-isomorphic posets".format( len(sweeps), len(distinct_posets) ); print;
+    t2 = time.time(); ("time needed to sort only the distinct posets from all sweeps:   {}".format(t2-t1));
+    ("Of these {} sweeps, only {} gave rise to non-isomorphic posets".format( len(sweeps), len(distinct_posets) )); ();
     return [distinct_sweeps, distinct_posets, distinct_tables]
 
 def display_results(result, items=[]):
     # "result" should be a list [distinct_sweeps, distinct_posets, distinct_tables], output from search_new(...)
-    # "items" should be a list of which posets you want to print.
-    #         if there are 14 posets, you may not want to print them all, but rather just the first three...
-    #         then set "items = [0,1,2]" and this prints just the first 3 out of how many there are
+    # "items" should be a list of which posets you want to .
+    #         if there are 14 posets, you may not want to  them all, but rather just the first three...
+    #         then set "items = [0,1,2]" and this s just the first 3 out of how many there are
     if len(items)==0:
         items = range(len(result[1])) # the number of distinct_posets
     for i in items:
         if i >= len(result[1]): # user asked for too many posets, more than exist
-            print "There are only {} posets. Set items=[0,1,...] until something less than the number of posets available.".format(len(result[1]))
+            ("There are only {} posets. Set items=[0,1,...] until something less than the number of posets available.".format(len(result[1])))
             break
-        print "Below is poset number {} and its associated data.".format(i)
+        ("Below is poset number {} and its associated data.".format(i))
         poset = result[1][i] # the ith distinct poset
         M = len(poset) / 4
         HD = poset.hasse_diagram()
         plt = plot(HD, vertex_labels=True, layout="acyclic", figsize=[M,4*M])
         show(plt)
-        # now print the ith distinct table, associated to the previously printed poset
-        print result[2][i]; print; print;
+        # now  the ith distinct table, associated to the previously ed poset
+        (result[2][i]); print(); print();
     return
 
 def update_distinct_sweeps(old_result, new_result, VT, Ls):
@@ -256,7 +256,7 @@ def find_indices(v):
         elif v_i==0:
             zeros_indices.append(i)
         else:
-            print "something went wrong... there was something not 0, not 1, in our v_B coordinate vector."
+            print("something went wrong... there was something not 0, not 1, in our v_B coordinate vector.")
     return ones_indices, zeros_indices
 
 def switch(v, one_index, zero_index):
