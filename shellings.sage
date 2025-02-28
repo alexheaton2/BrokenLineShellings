@@ -12,7 +12,7 @@ def search(V, vFav, pivots, limit, misses, w):
     #         -higher value of "w" means a more localized search
     #         -a value of "w=0" means you destroy the dependency of \ell(v_{j+1}) on the previous \ell(v_j)
     import random
-    print("Note that this algorithm is random, meant to explore possibilities. Re-running the same code again may produce different results."
+    print("Note that this algorithm is random, meant to explore possibilities. Re-running the same code again may produce different results.")
     if len(pivots) > 0:
         if pivots[0]==0:
             print("Please don't pivot at 0. The first place you can pivot is at 1.")
